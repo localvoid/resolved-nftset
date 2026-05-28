@@ -34,6 +34,8 @@ jobs:
           git push --tags origin
   build:
     name: Build Packages
+    needs:
+      - tag
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
