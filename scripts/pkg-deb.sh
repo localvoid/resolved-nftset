@@ -1,4 +1,4 @@
-#!/usr/bin/sh
+#!/usr/bin/bash
 set -euo pipefail
 
 mkdir -p ${PWD}/dist/deb/DEBIAN
