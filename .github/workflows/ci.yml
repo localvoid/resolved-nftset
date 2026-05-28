@@ -11,9 +11,19 @@ permissions:
   id-token: write
 on:
   push:
+    paths:
+      - crates/**
+      - packages/**
+      - tests/**
+      - Cargo.lock
     branches:
       - master
   pull_request:
+    paths:
+      - crates/**
+      - packages/**
+      - tests/**
+      - Cargo.lock
     branches:
       - master
 concurrency:
