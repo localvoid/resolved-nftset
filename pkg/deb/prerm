@@ -1,0 +1,5 @@
+#!/usr/bin/sh
+set -e
+if [ "$1" = "remove" ]; then
+    systemctl disable --now resolved-nftset.service --no-warn >/dev/null || true
+fi

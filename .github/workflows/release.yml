@@ -1,0 +1,53 @@
+name: Release
+
+permissions:
+  contents: write
+  id-token: write
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        type: string
+        required: true
+        description: Version Number
+
+env:
+  ACTION_CACHE_PATH: |
+    ~/.cargo/bin/
+    ~/.cargo/registry/index/
+    ~/.cargo/registry/cache/
+    ~/.cargo/git/db/
+    target/
+
+jobs:
+  build:
+    name: Build Packages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/cache@v5
+        with:
+          path: ${{ env.ACTION_CACHE_PATH }}
+          key: build
+      - run: cargo build --release
+      - name: Build DEB package
+        run: VERSION=${{ github.event.inputs.version }} ARCH=$(dpkg --print-architecture) scripts/pkg-deb.sh
+      - name: Build RPM package
+        run: VERSION=${{ github.event.inputs.version }} scripts/pkg-rpm.sh
+      - name: Push version tag
+        if: ${{ github.event.inputs.version != '' }}
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "username@users.noreply.github.com"
+          git tag "v${{ github.event.inputs.version }}"
+          git push origin "v${{ github.event.inputs.version }}"
+      - name: Create release
+        uses: softprops/action-gh-release@v3
+        with:
+          files: |
+            target/release/resolved-nftset
+            resolved-nftset.service
+            dist/*.deb
+            dist/rpm/RPMS/*/*.rpm

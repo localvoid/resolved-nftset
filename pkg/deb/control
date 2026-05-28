@@ -1,0 +1,7 @@
+Package: resolved-nftset
+Version: __VERSION__
+Section: misc
+Priority: optional
+Architecture: __ARCH__
+Maintainer: Boris Kaul <localvoid@gmail.com>
+Description: Service that adds resolved IPs to nftable sets.

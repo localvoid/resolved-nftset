@@ -1,0 +1,43 @@
+[Unit]
+Description=Resolved DNS IPs to nftables sets
+Documentation=https://github.com/localvoid/resolved-nftset
+After=network.target systemd-resolved.service nftables.service
+Requires=systemd-resolved.service
+Wants=nftables.service
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/resolved-nftset
+ExecReload=/usr/bin/kill -HUP $MAINPID
+User=resolved-nftset
+Group=resolved-nftset
+ConfigurationDirectory=resolved-nftset
+
+Restart=on-failure
+RestartSec=5s
+TimeoutStartSec=10s
+
+# Privileges
+CapabilityBoundingSet=CAP_NET_ADMIN
+AmbientCapabilities=CAP_NET_ADMIN
+NoNewPrivileges=yes
+
+# Sandboxing
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ReadWritePaths=/run/systemd/resolve/
+
+ProtectKernelModules=yes
+ProtectKernelTunables=yes
+ProtectControlGroups=yes
+MemoryDenyWriteExecute=yes
+LockPersonality=yes
+RestrictRealtime=yes
+RestrictAddressFamilies=AF_UNIX AF_NETLINK
+SystemCallFilter=@system-service @network-io
+SystemCallArchitectures=native
+
+[Install]
+WantedBy=multi-user.target
